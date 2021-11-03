@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +22,7 @@ import java.util.List;
 public class CodeHelper {
 
     public static List<String> readFromFile(String fileName) {
+        LogUtils.log("readFromFile:" + fileName);
         File targetFile = new File(fileName);
         if (!targetFile.exists()) {
             return Collections.emptyList();
@@ -58,8 +58,8 @@ public class CodeHelper {
     }
 
     public static String getCodeDataHomePath() {
-        //return Paths.get("root", "codeData").toString();
-        return "/Users/kevin/Works/fanruan/projects/myprojects/codeData";
+        return "./codeData";
+        //return "/Users/kevin/Works/github/project/gold_code/codeData";
     }
 
     public static String formatDate(Date date) {

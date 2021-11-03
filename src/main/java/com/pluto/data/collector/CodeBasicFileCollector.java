@@ -23,9 +23,9 @@ public class CodeBasicFileCollector extends AbstractFileCollector<Map<String, Co
 
     @Override
     public void collect() {
-        //if (!finish()) {
-        if (false) {
-            runCmds("python", "all_code.py", bsn_date);
+        if (!finish()) {
+       // if (false) {
+            runCmds("python", "pythonJob/all_code.py", bsn_date);
         }
     }
 

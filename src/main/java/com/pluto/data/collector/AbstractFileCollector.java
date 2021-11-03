@@ -13,7 +13,7 @@ public abstract class AbstractFileCollector<T> implements Collector<T> {
             process.waitFor();
             return process.exitValue();
         } catch (Exception e) {
-            System.out.print(e.getMessage());
+            e.printStackTrace();
         }
         return -1;
     }
@@ -24,7 +24,7 @@ public abstract class AbstractFileCollector<T> implements Collector<T> {
             process.waitFor();
             return process.exitValue();
         } catch (Exception e) {
-            System.out.print(e.getMessage());
+            e.printStackTrace();
         }
         return -1;
     }

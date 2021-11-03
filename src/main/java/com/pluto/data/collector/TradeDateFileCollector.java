@@ -4,6 +4,7 @@ import com.pluto.bean.TradeDate;
 import com.pluto.data.reader.Reader;
 import com.pluto.data.reader.TradeDateReader;
 import com.pluto.helper.CodeHelper;
+import com.pluto.helper.LogUtils;
 
 import java.io.File;
 import java.util.List;
@@ -23,9 +24,9 @@ public class TradeDateFileCollector extends AbstractFileCollector<List<TradeDate
 
     @Override
     public void collect() {
-        //if (!finish()) {
-        if (false) {
-            runCmds("python", "trade_date.py", date);
+        if (!finish()) {
+            //if (false) {
+            runCmds("python", "pythonJob/trade_date.py", date);
         }
     }
 
@@ -37,6 +38,7 @@ public class TradeDateFileCollector extends AbstractFileCollector<List<TradeDate
 
     @Override
     public Reader<List<TradeDate>> getReader() {
+        LogUtils.log(getClass().getSimpleName() + ":dataPath=" + getDataPath());
         return new TradeDateReader(getDataPath());
     }
 

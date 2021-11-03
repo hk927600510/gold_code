@@ -12,6 +12,7 @@ import com.pluto.data.collector.TradeDateFileCollector;
 import com.pluto.data.collector.WeekKDataFileCollector;
 import com.pluto.data.reader.Reader;
 import com.pluto.helper.CodeHelper;
+import com.pluto.helper.LogUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,19 +57,26 @@ public enum GoldCodeServiceInstance {
      * 开始任务
      */
     public void start(String date) {
+        LogUtils.log("开始任务,date=" + date);
+        LogUtils.log("DataHome=" + CodeHelper.getCodeDataHomePath());
         inputDate = date;
-
         clear();
+        LogUtils.log("历史结果文件清理完成");
         // 提前批处理、获取交易时间
         beforeDataCollect();
+        LogUtils.log("提前批处理完成");
         // 交易时间初始化
         dateInit(date);
+        LogUtils.log("交易时间初始化完成");
         // 数据收集
         dataCollect();
+        LogUtils.log("数据收集批处理完成");
         // 分析
         codeAnalysis();
+        LogUtils.log("股票分析完成");
         // 发送邮件
         sendEmail();
+        LogUtils.log("发送邮件完成");
     }
 
     private void sendEmail() {
@@ -95,6 +103,8 @@ public enum GoldCodeServiceInstance {
     }
 
     private void initCollectorMap() {
+        LogUtils.log("bsn_date=" + bsn_date);
+        LogUtils.log("bsn_begin_date=" + bsn_begin_date);
         collectorMap.put("CodeBasic", new CodeBasicFileCollector(bsn_date));
         collectorMap.put("DayKData", new DayKDataFileCollector(bsn_begin_date, bsn_date));
         collectorMap.put("WeekKData", new WeekKDataFileCollector(bsn_begin_date, bsn_date));
@@ -107,6 +117,7 @@ public enum GoldCodeServiceInstance {
         Reader<List<TradeDate>> reader = (Reader<List<TradeDate>>) beforeCollectorMap.get("TradeDate").getReader();
         List<TradeDate> tradeDateList = reader.getDataAll();
         List<TradeDate> filterTradeDateList = tradeDateList.stream().sorted(Comparator.comparing(TradeDate::getCalendarDate).reversed()).collect(Collectors.toList());
+        LogUtils.log("filterTradeDateList size=" + filterTradeDateList.size());
         int bsnCount = 0;
         for (TradeDate tradeDate : filterTradeDateList) {
             if (bsn_date == null && tradeDate.getCalendarDate().compareTo(date) <= 0 && "1" .equals(tradeDate.getIsTradingDay())) {
@@ -119,6 +130,10 @@ public enum GoldCodeServiceInstance {
                     break;
                 }
             }
+        }
+
+        if (bsn_date == null || bsn_begin_date == null) {
+            throw new IllegalArgumentException("dataInit error,bsn_date=" + bsn_date + ", bsn_begin_date=" + bsn_begin_date);
         }
     }
 

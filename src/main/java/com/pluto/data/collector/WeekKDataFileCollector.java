@@ -27,13 +27,13 @@ public class WeekKDataFileCollector extends AbstractFileCollector<Map<String, Ba
 
     @Override
     public void collect() {
-        //if (!finish()) {
-        if (false) {
+        if (!finish()) {
+        //if (false) {
             Calendar calendar = Calendar.getInstance();
             String collectStartDate = CodeHelper.formatDate(calendar.getTime());
             calendar.add(Calendar.YEAR, -1);
             String collectEndDate = CodeHelper.formatDate(calendar.getTime());
-            runCmds("python", "week_k_data.py", bsn_date, collectStartDate, collectEndDate);
+            runCmds("python", "pythonJob/week_k_data.py", bsn_date, collectStartDate, collectEndDate);
         }
     }
 

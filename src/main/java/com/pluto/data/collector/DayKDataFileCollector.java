@@ -18,27 +18,25 @@ public class DayKDataFileCollector extends AbstractFileCollector<Map<String, Day
 
     private String bsn_date;
 
-    private String bsn_begin_date;
-
-    public DayKDataFileCollector(String bsn_begin_date, String bsn_date) {
+    public DayKDataFileCollector(String bsn_date) {
         this.bsn_date = bsn_date;
-        this.bsn_begin_date = bsn_begin_date;
     }
 
     @Override
     public void collect() {
         if (!finish()) {
-        //if (false) {
+            //if (false) {
             Calendar calendar = Calendar.getInstance();
-            String collectStartDate = CodeHelper.formatDate(calendar.getTime());
-            calendar.add(Calendar.YEAR, -1);
+            calendar.setTime(CodeHelper.transToDate(bsn_date));
             String collectEndDate = CodeHelper.formatDate(calendar.getTime());
+            calendar.add(Calendar.YEAR, -1);
+            String collectStartDate = CodeHelper.formatDate(calendar.getTime());
             runCmds("python", "pythonJob/day_k_data.py", bsn_date, collectStartDate, collectEndDate);
         }
     }
 
     @Override
-    public boolean finish() {
+    public boolean hasFinish() {
         File file = new File(getDataPath());
         if (file.exists()) {
             Calendar calendar = Calendar.getInstance();
@@ -52,7 +50,7 @@ public class DayKDataFileCollector extends AbstractFileCollector<Map<String, Day
 
     @Override
     public Reader<Map<String, DayKData>> getReader() {
-        return new DayKDataReader(getDataPath(), bsn_begin_date, bsn_date);
+        return new DayKDataReader(getDataPath());
     }
 
     @Override

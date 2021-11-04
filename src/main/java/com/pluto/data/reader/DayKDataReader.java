@@ -17,18 +17,12 @@ import java.util.stream.Collectors;
  */
 public class DayKDataReader implements Reader<Map<String, DayKData>> {
 
-    private String bsn_date;
-
-    private String bsn_begin_date;
-
     private final String dataPath;
 
     private Map<String, Map<String, DayKData>> dayKDataMap = new HashMap<>();
 
-    public DayKDataReader(String dataPath, String bsn_begin_date, String bsn_date) {
+    public DayKDataReader(String dataPath) {
         this.dataPath = dataPath;
-        this.bsn_begin_date = bsn_begin_date;
-        this.bsn_date = bsn_date;
     }
 
     @Override
@@ -40,7 +34,7 @@ public class DayKDataReader implements Reader<Map<String, DayKData>> {
     public Map<String, DayKData> getDataByCondition(String key) {
         if (dayKDataMap.get(key) == null) {
             List<String> contents = CodeHelper.readFromFile(dataPath + File.separator + key);
-            Map<String, DayKData> dayKData = contents.stream().map(this::transferDayKData).filter(Objects::nonNull).filter(p -> p.getDate().compareTo(bsn_begin_date) >= 0).collect(Collectors.toMap(DayKData::getDate, k -> k));
+            Map<String, DayKData> dayKData = contents.stream().map(this::transferDayKData).filter(Objects::nonNull).collect(Collectors.toMap(DayKData::getDate, k -> k));
             dayKDataMap.put(key, dayKData);
         }
         return dayKDataMap.get(key);

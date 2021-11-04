@@ -31,14 +31,14 @@ public class TradeDateFileCollector extends AbstractFileCollector<List<TradeDate
     }
 
     @Override
-    public boolean finish() {
+    public boolean hasFinish() {
         File dataFile = new File(getDataPath());
         return dataFile.exists();
     }
 
     @Override
     public Reader<List<TradeDate>> getReader() {
-        LogUtils.log(getClass().getSimpleName() + ":dataPath=" + getDataPath());
+        LogUtils.log(getClass().getSimpleName() + "getReader: dataPath=" + getDataPath());
         return new TradeDateReader(getDataPath());
     }
 

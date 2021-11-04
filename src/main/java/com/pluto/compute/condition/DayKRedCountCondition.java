@@ -1,8 +1,10 @@
 package com.pluto.compute.condition;
 
 import com.pluto.bean.DayKData;
+import com.pluto.compute.filter.DataFilter;
 import com.pluto.data.collector.Collector;
 import com.pluto.data.reader.Reader;
+import com.pluto.helper.LogUtils;
 
 import java.util.Map;
 
@@ -15,8 +17,15 @@ public class DayKRedCountCondition implements Condition {
 
     private Map<String, Collector> collectorMap;
 
-    public DayKRedCountCondition(Map<String, Collector> collectorMap) {
+    private String dataBegin;
+
+    private String dataEnd;
+
+    public DayKRedCountCondition(Map<String, Collector> collectorMap, String dataBegin, String dataEnd) {
         this.collectorMap = collectorMap;
+        this.dataBegin = dataBegin;
+        this.dataEnd = dataEnd;
+        LogUtils.log(getClass().getSimpleName() + ": condition=" + getName() + " dataBegin=" + this.dataBegin + " dataEnd=" + this.dataEnd);
     }
 
     @Override
@@ -28,7 +37,7 @@ public class DayKRedCountCondition implements Condition {
     public boolean check(String code) {
         Reader<Map<String, DayKData>> dayKReader = (Reader<Map<String, DayKData>>) collectorMap.get("DayKData").getReader();
         Map<String, DayKData> dateAndDayKMap = dayKReader.getDataByCondition(code);
-        long count = dateAndDayKMap.values().stream().filter(this::filterRedDayKData).count();
+        long count = dateAndDayKMap.values().stream().filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).filter(this::filterRedDayKData).count();
         return count > dateAndDayKMap.size() / 2;
     }
 

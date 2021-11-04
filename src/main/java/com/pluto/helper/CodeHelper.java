@@ -1,5 +1,9 @@
 package com.pluto.helper;
 
+import com.pluto.bean.TradeDate;
+import com.pluto.data.collector.Collector;
+import com.pluto.data.reader.Reader;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Kevin.H
@@ -22,7 +28,6 @@ import java.util.List;
 public class CodeHelper {
 
     public static List<String> readFromFile(String fileName) {
-        LogUtils.log("readFromFile:" + fileName);
         File targetFile = new File(fileName);
         if (!targetFile.exists()) {
             return Collections.emptyList();
@@ -66,6 +71,15 @@ public class CodeHelper {
         return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 
+    public static Date transToDate(String date) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd").parse(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new Date();
+    }
+
     public static void deleteFile(File file) {
         if (file == null || !file.exists()) {
             return;
@@ -77,6 +91,13 @@ public class CodeHelper {
             }
         }
         file.delete();
+    }
+
+    public static String getBsnDateWithInterval(Map<String, Collector> beforeCollectorMap, String date, int interval) {
+        Reader<List<TradeDate>> reader = (Reader<List<TradeDate>>) beforeCollectorMap.get("TradeDate").getReader();
+        List<TradeDate> tradeDateList = reader.getDataAll();
+        List<TradeDate> filterTradeDateList = tradeDateList.stream().filter(p -> p.getCalendarDate().compareTo(date) <= 0 && "1" .equals(p.getIsTradingDay())).collect(Collectors.toList());
+        return filterTradeDateList.get(Math.abs(interval)).getCalendarDate();
     }
 
 }

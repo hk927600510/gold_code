@@ -17,18 +17,12 @@ import java.util.stream.Collectors;
  */
 public class WeekKDataReader implements Reader<Map<String, BasicKData>> {
 
-    private String bsn_date;
-
-    private String bsn_begin_date;
-
     private final String dataPath;
 
     private Map<String, Map<String, BasicKData>> weekKDataMap = new HashMap<>();
 
-    public WeekKDataReader(String dataPath, String bsn_begin_date, String bsn_date) {
+    public WeekKDataReader(String dataPath) {
         this.dataPath = dataPath;
-        this.bsn_begin_date = bsn_begin_date;
-        this.bsn_date = bsn_date;
     }
 
     @Override
@@ -40,7 +34,7 @@ public class WeekKDataReader implements Reader<Map<String, BasicKData>> {
     public Map<String, BasicKData> getDataByCondition(String key) {
         if (weekKDataMap.get(key) == null) {
             List<String> contents = CodeHelper.readFromFile(dataPath + File.separator + key);
-            Map<String, BasicKData> basicKData = contents.stream().map(this::transferBasicKData).filter(Objects::nonNull).filter(p -> p.getDate().compareTo(bsn_begin_date) >= 0).collect(Collectors.toMap(BasicKData::getDate, k -> k));
+            Map<String, BasicKData> basicKData = contents.stream().map(this::transferBasicKData).filter(Objects::nonNull).collect(Collectors.toMap(BasicKData::getDate, k -> k));
             weekKDataMap.put(key, basicKData);
         }
         return weekKDataMap.get(key);

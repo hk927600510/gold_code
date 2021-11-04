@@ -30,7 +30,7 @@ public class CodeBasicFileCollector extends AbstractFileCollector<Map<String, Co
     }
 
     @Override
-    public boolean finish() {
+    public boolean hasFinish() {
         File dataFile = new File(getDataPath());
         return dataFile.exists();
     }

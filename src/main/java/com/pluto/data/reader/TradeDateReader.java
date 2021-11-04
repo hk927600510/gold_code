@@ -3,6 +3,7 @@ package com.pluto.data.reader;
 import com.pluto.bean.TradeDate;
 import com.pluto.helper.CodeHelper;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class TradeDateReader implements Reader<List<TradeDate>> {
     public List<TradeDate> getDataAll() {
         if (tradeDateList == null) {
             List<String> fileContents = CodeHelper.readFromFile(dataPath);
-            tradeDateList = fileContents.stream().map(this::transferTradeDate).collect(Collectors.toList());
+            tradeDateList = fileContents.stream().map(this::transferTradeDate).sorted(Comparator.comparing(TradeDate::getCalendarDate).reversed()).collect(Collectors.toList());
         }
         return tradeDateList;
     }

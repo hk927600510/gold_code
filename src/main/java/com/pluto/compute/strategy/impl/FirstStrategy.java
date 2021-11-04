@@ -2,14 +2,15 @@ package com.pluto.compute.strategy.impl;
 
 import com.pluto.bean.CodeBasic;
 import com.pluto.compute.condition.Condition;
-import com.pluto.compute.condition.DayKRedCountCondition;
 import com.pluto.compute.condition.DayKPctChgLimitCondition;
+import com.pluto.compute.condition.DayKRedCountCondition;
 import com.pluto.compute.condition.WeekKOpenAndCloseAvgCondition;
 import com.pluto.compute.condition.WeekKOpenAndCloseCondition;
 import com.pluto.compute.condition.WeekKRedCountCondition;
 import com.pluto.compute.strategy.Strategy;
 import com.pluto.data.collector.Collector;
 import com.pluto.data.reader.Reader;
+import com.pluto.helper.CodeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,18 +23,25 @@ import java.util.Map;
  */
 public class FirstStrategy implements Strategy {
 
+    private String bsn_date;
+
     private Map<String, Collector> collectorMap;
+
+    private Map<String, Collector> beforeCollectorMap;
 
     private List<Condition> conditionList;
 
-    public FirstStrategy(Map<String, Collector> collectorMap) {
+    public FirstStrategy(String bsn_date, Map<String, Collector> beforeCollectorMap, Map<String, Collector> collectorMap) {
+        this.bsn_date = bsn_date;
         this.collectorMap = collectorMap;
+        this.beforeCollectorMap = beforeCollectorMap;
         this.conditionList = new ArrayList<>();
-        conditionList.add(new DayKRedCountCondition(collectorMap));
-        conditionList.add(new DayKPctChgLimitCondition(collectorMap));
-        conditionList.add(new WeekKRedCountCondition(collectorMap));
-        conditionList.add(new WeekKOpenAndCloseAvgCondition(collectorMap));
-        conditionList.add(new WeekKOpenAndCloseCondition(collectorMap));
+        String dataBeginDate = CodeHelper.getBsnDateWithInterval(beforeCollectorMap, bsn_date, -15);
+        conditionList.add(new DayKRedCountCondition(collectorMap, dataBeginDate, bsn_date));
+        conditionList.add(new DayKPctChgLimitCondition(collectorMap, dataBeginDate, bsn_date));
+        conditionList.add(new WeekKRedCountCondition(collectorMap, dataBeginDate, bsn_date));
+        conditionList.add(new WeekKOpenAndCloseAvgCondition(collectorMap, dataBeginDate, bsn_date));
+        conditionList.add(new WeekKOpenAndCloseCondition(collectorMap, dataBeginDate, bsn_date));
     }
 
     @Override

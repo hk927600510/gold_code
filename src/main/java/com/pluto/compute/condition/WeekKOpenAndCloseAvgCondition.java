@@ -3,7 +3,6 @@ package com.pluto.compute.condition;
 import com.pluto.bean.BasicKData;
 import com.pluto.compute.filter.DataFilter;
 import com.pluto.data.collector.Collector;
-import com.pluto.data.reader.Reader;
 import com.pluto.helper.LogUtils;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
  * @version 5.1
  * Created by Kevin.H on 2021/11/3
  */
-public class WeekKOpenAndCloseAvgCondition implements Condition {
+public class WeekKOpenAndCloseAvgCondition extends AbstractCondition {
 
     private Map<String, Collector> collectorMap;
 
@@ -40,8 +39,7 @@ public class WeekKOpenAndCloseAvgCondition implements Condition {
 
     @Override
     public boolean check(String code) {
-        Reader<Map<String, BasicKData>> dayKReader = (Reader<Map<String, BasicKData>>) collectorMap.get("WeekKData").getReader();
-        Map<String, BasicKData> dateAndWeekKMap = dayKReader.getDataByCondition(code);
+        Map<String, BasicKData> dateAndWeekKMap = getWeekKReader().getDataByCondition(code);
         List<String> dateList = new ArrayList<>(dateAndWeekKMap.keySet()).stream().filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).sorted(Comparator.comparing(String::toString).reversed()).collect(Collectors.toList());
         int compareCount = Math.min(dateList.size() - 1, 2);
         for (int i = 0; i < compareCount; i++) {
@@ -57,5 +55,10 @@ public class WeekKOpenAndCloseAvgCondition implements Condition {
         }
         return true;
 
+    }
+
+    @Override
+    Map<String, Collector> getCollectorMap() {
+        return collectorMap;
     }
 }

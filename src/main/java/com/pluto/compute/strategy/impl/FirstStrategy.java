@@ -1,6 +1,7 @@
 package com.pluto.compute.strategy.impl;
 
 import com.pluto.bean.CodeBasic;
+import com.pluto.compute.condition.CodeIpoDateCondition;
 import com.pluto.compute.condition.Condition;
 import com.pluto.compute.condition.DayKPctChgLimitCondition;
 import com.pluto.compute.condition.DayKRedCountCondition;
@@ -37,6 +38,7 @@ public class FirstStrategy implements Strategy {
         this.beforeCollectorMap = beforeCollectorMap;
         this.conditionList = new ArrayList<>();
         String dataBeginDate = CodeHelper.getBsnDateWithInterval(beforeCollectorMap, bsn_date, -15);
+        conditionList.add(new CodeIpoDateCondition(collectorMap, bsn_date));
         conditionList.add(new DayKRedCountCondition(collectorMap, dataBeginDate, bsn_date));
         conditionList.add(new DayKPctChgLimitCondition(collectorMap, dataBeginDate, bsn_date));
         conditionList.add(new WeekKRedCountCondition(collectorMap, dataBeginDate, bsn_date));

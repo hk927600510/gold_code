@@ -6,7 +6,9 @@ import com.pluto.data.collector.Collector;
 import com.pluto.data.reader.Reader;
 import com.pluto.helper.LogUtils;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Kevin.H
@@ -37,8 +39,9 @@ public class DayKRedCountCondition implements Condition {
     public boolean check(String code) {
         Reader<Map<String, DayKData>> dayKReader = (Reader<Map<String, DayKData>>) collectorMap.get("DayKData").getReader();
         Map<String, DayKData> dateAndDayKMap = dayKReader.getDataByCondition(code);
-        long count = dateAndDayKMap.values().stream().filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).filter(this::filterRedDayKData).count();
-        return count > dateAndDayKMap.size() / 2;
+        List<DayKData> filterData = dateAndDayKMap.values().stream().filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).collect(Collectors.toList());
+        long count = filterData.stream().filter(this::filterRedDayKData).count();
+        return count > filterData.size() / 2;
     }
 
     private boolean filterRedDayKData(DayKData data) {
@@ -46,6 +49,10 @@ public class DayKRedCountCondition implements Condition {
             return false;
         }
         if ("0" .equals(data.getTradeStatus())) {
+            return true;
+        }
+        if (data.getPctChg().isEmpty()) {
+            // 涨幅为空判定为停牌，有些停牌标志不准
             return true;
         }
         return Double.parseDouble(data.getPctChg()) >= 0;

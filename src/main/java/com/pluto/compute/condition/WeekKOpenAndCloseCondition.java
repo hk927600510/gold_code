@@ -44,6 +44,6 @@ public class WeekKOpenAndCloseCondition implements Condition {
         Map<String, BasicKData> dateAndWeekKMap = dayKReader.getDataByCondition(code);
         List<String> dateList = new ArrayList<>(dateAndWeekKMap.keySet()).stream().filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).sorted(Comparator.comparing(String::toString).reversed()).collect(Collectors.toList());
         BasicKData lastedWeekKData = dateAndWeekKMap.get(dateList.get(0));
-        return Double.parseDouble(lastedWeekKData.getClose()) > Double.parseDouble(lastedWeekKData.getOpen());
+        return Double.parseDouble(lastedWeekKData.getClose()) >= Double.parseDouble(lastedWeekKData.getOpen());
     }
 }

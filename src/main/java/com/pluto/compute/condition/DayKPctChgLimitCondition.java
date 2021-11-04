@@ -46,7 +46,11 @@ public class DayKPctChgLimitCondition implements Condition {
             return false;
         }
         if ("0" .equals(data.getTradeStatus())) {
-            return true;
+            return false;
+        }
+        if (data.getPctChg().isEmpty()){
+            // 涨幅为空判定为停牌，有些停牌标志不准
+            return false;
         }
         return Double.parseDouble(data.getPctChg()) < -4;
     }

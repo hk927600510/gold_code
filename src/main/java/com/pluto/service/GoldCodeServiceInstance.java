@@ -10,6 +10,7 @@ import com.pluto.data.collector.TradeDateFileCollector;
 import com.pluto.data.collector.WeekKDataFileCollector;
 import com.pluto.helper.CodeHelper;
 import com.pluto.helper.LogUtils;
+import com.pluto.helper.MailHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public enum GoldCodeServiceInstance {
     /**
      * 开始任务
      */
-    public void start(String date) {
+    public void start(String date) throws Exception {
         inputDate = checkInputDate(date);
         LogUtils.log("开始任务,inputDate=" + inputDate);
         LogUtils.log("DataHome=" + CodeHelper.getCodeDataHomePath());
@@ -72,7 +73,8 @@ public enum GoldCodeServiceInstance {
         LogUtils.log("发送邮件完成");
     }
 
-    private void sendEmail() {
+    private void sendEmail() throws Exception {
+        MailHelper.sendMail(inputDate,resultPathList);
     }
 
     private void clear() {
@@ -125,6 +127,7 @@ public enum GoldCodeServiceInstance {
     private void codeAnalysis() {
         initStrategyList();
         for (Strategy strategy : strategyList) {
+            LogUtils.log("strategy:[" + strategy.getName() + "] check start");
             List<CodeBasic> result = strategy.match();
             String fileName = outputPath + File.separator + strategy.getName() + ".csv";
             CodeHelper.writeToFile(fileName, result.stream().sorted(Comparator.comparing(CodeBasic::getIndustry)).map(CodeBasic::toString).collect(Collectors.toList()));
@@ -142,7 +145,7 @@ public enum GoldCodeServiceInstance {
         Calendar calendar = Calendar.getInstance();
         String now = CodeHelper.formatDate(calendar.getTime());
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        if (date.equals(now) && hour < 20) {
+        if (date.equals(now) && hour < 18) {
             LogUtils.log(getClass().getSimpleName() + " : time is before 20 hour ,use the day before inputDate ");
             calendar.setTime(input);
             calendar.add(Calendar.DAY_OF_YEAR, -1);

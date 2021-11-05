@@ -12,6 +12,7 @@ import com.pluto.compute.strategy.Strategy;
 import com.pluto.data.collector.Collector;
 import com.pluto.data.reader.Reader;
 import com.pluto.helper.CodeHelper;
+import com.pluto.helper.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +58,15 @@ public class FirstStrategy implements Strategy {
         Reader<Map<String, CodeBasic>> reader = (Reader<Map<String, CodeBasic>>) collectorMap.get("CodeBasic").getReader();
         Map<String, CodeBasic> allCodeBasic = reader.getDataAll();
         for (String key : allCodeBasic.keySet()) {
-            if (checkCondition(key)) {
-                result.add(allCodeBasic.get(key));
+            try {
+                if (checkCondition(key)) {
+                    result.add(allCodeBasic.get(key));
+                }
+            } catch (Exception e) {
+                LogUtils.log("execute error , code=" + key);
+                e.printStackTrace();
             }
+
         }
         return result;
     }

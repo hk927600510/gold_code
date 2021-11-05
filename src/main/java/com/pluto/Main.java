@@ -9,7 +9,7 @@ import com.pluto.service.GoldCodeServiceInstance;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         if (!checkArgs(args)){
             throw new IllegalArgumentException("input argument is wrong , need date like : 2021-10-01");
         }

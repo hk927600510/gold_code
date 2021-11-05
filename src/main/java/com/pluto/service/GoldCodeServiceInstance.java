@@ -146,7 +146,7 @@ public enum GoldCodeServiceInstance {
         String now = CodeHelper.formatDate(calendar.getTime());
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         if (date.equals(now) && hour < 18) {
-            LogUtils.log(getClass().getSimpleName() + " : time is before 20 hour ,use the day before inputDate ");
+            LogUtils.log(getClass().getSimpleName() + " : time is before 18 hour ,use the day before inputDate ");
             calendar.setTime(input);
             calendar.add(Calendar.DAY_OF_YEAR, -1);
             return CodeHelper.formatDate(calendar.getTime());

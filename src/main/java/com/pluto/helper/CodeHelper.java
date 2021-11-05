@@ -63,7 +63,7 @@ public class CodeHelper {
     }
 
     public static String getCodeDataHomePath() {
-        return "./codeData";
+        return "/root/projects/gold_code/codeData";
         //return "/Users/kevin/Works/github/project/gold_code/codeData";
     }
 

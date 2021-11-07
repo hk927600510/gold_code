@@ -18,6 +18,8 @@ public class TradeDateFileCollector extends AbstractFileCollector<List<TradeDate
 
     private String date;
 
+    private Reader<List<TradeDate>> reader;
+
     public TradeDateFileCollector(String inputDate) {
         this.date = inputDate;
     }
@@ -38,8 +40,11 @@ public class TradeDateFileCollector extends AbstractFileCollector<List<TradeDate
 
     @Override
     public Reader<List<TradeDate>> getReader() {
-        LogUtils.log(getClass().getSimpleName() + "getReader: dataPath=" + getDataPath());
-        return new TradeDateReader(getDataPath());
+        if (reader == null) {
+            reader = new TradeDateReader(getDataPath());
+            LogUtils.log(getClass().getSimpleName() + "getReader: dataPath=" + getDataPath());
+        }
+        return reader;
     }
 
     @Override

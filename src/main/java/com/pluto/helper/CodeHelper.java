@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -63,8 +64,8 @@ public class CodeHelper {
     }
 
     public static String getCodeDataHomePath() {
-        return "/root/projects/gold_code/codeData";
-        //return "/Users/kevin/Works/github/project/gold_code/codeData";
+        //return "/root/projects/gold_code/codeData";
+         return "./codeData";
     }
 
     public static String formatDate(Date date) {
@@ -98,6 +99,13 @@ public class CodeHelper {
         List<TradeDate> tradeDateList = reader.getDataAll();
         List<TradeDate> filterTradeDateList = tradeDateList.stream().filter(p -> p.getCalendarDate().compareTo(date) <= 0 && "1" .equals(p.getIsTradingDay())).collect(Collectors.toList());
         return filterTradeDateList.get(Math.abs(interval)).getCalendarDate();
+    }
+
+    public static String getCommonDateWithInterval(String bsnDate, int yearInterval, int monthInterval, int dayInterval) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(transToDate(bsnDate));
+        calendar.add(Calendar.YEAR, yearInterval);
+        return formatDate(calendar.getTime());
     }
 
 }

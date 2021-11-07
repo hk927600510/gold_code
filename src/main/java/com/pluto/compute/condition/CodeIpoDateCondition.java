@@ -22,7 +22,6 @@ public class CodeIpoDateCondition extends AbstractCondition {
     public CodeIpoDateCondition(Map<String, Collector> collectorMap, String bsnDate) {
         this.collectorMap = collectorMap;
         this.bsnDate = bsnDate;
-        LogUtils.log(getClass().getSimpleName() + ": condition=" + getName() + " bsnDate=" + this.bsnDate);
     }
 
     @Override

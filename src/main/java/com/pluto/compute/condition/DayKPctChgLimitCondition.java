@@ -24,7 +24,6 @@ public class DayKPctChgLimitCondition extends AbstractCondition {
         this.collectorMap = collectorMap;
         this.dataBegin = dataBegin;
         this.dataEnd = dataEnd;
-        LogUtils.log(getClass().getSimpleName() + ": condition=" + getName() + " dataBegin=" + this.dataBegin + " dataEnd=" + this.dataEnd);
     }
 
     @Override

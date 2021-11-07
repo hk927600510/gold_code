@@ -1,9 +1,9 @@
 package com.pluto.compute.condition;
 
 import com.pluto.bean.BasicKData;
+import com.pluto.bean.DayKData;
 import com.pluto.compute.filter.DataFilter;
 import com.pluto.data.collector.Collector;
-import com.pluto.data.reader.Reader;
 import com.pluto.helper.LogUtils;
 
 import java.util.ArrayList;
@@ -29,26 +29,34 @@ public class WeekKRedCountCondition extends AbstractCondition {
         this.collectorMap = collectorMap;
         this.dataBegin = dataBegin;
         this.dataEnd = dataEnd;
-        LogUtils.log(getClass().getSimpleName() + ": condition=" + getName() + " dataBegin=" + this.dataBegin + " dataEnd=" + this.dataEnd);
     }
 
     @Override
     public String getName() {
-        return "3个周k开盘价趋势向上";
+        return "3个周k涨幅大于0";
     }
 
     @Override
     public boolean check(String code) {
         Map<String, BasicKData> dateAndWeekKMap = getWeekKReader().getDataByCondition(code);
         List<String> dateList = new ArrayList<>(dateAndWeekKMap.keySet()).stream().filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).sorted(Comparator.comparing(String::toString).reversed()).collect(Collectors.toList());
-        int compareCount = Math.min(dateList.size() - 1, 2);
-        for (int i = 0; i < compareCount; i++) {
-            String firstOpen = dateAndWeekKMap.get(dateList.get(i)).getOpen();
-            String secondOpen = dateAndWeekKMap.get(dateList.get(i + 1)).getOpen();
-            if (Double.parseDouble(firstOpen) < Double.parseDouble(secondOpen)) {
+        List<String> twoWeekDates = dateList.size() < 2 ? dateList : dateList.subList(0, 2);
+        if (!twoWeekDates.isEmpty()) {
+            for (String date : twoWeekDates) {
+                BasicKData data = dateAndWeekKMap.get(date);
+                if (data != null && !data.getPctChg().isEmpty() && Double.parseDouble(data.getPctChg()) < 0) {
+                    return false;
+                }
+            }
+
+            Map<String, DayKData> dateAndDayKMap = getDayKReader().getDataByCondition(code);
+            List<BasicKData> thisWeekDayKData = dateAndDayKMap.values().stream().filter(p -> p.getDate().compareTo(twoWeekDates.get(0)) > 0).collect(Collectors.toList());
+            double thisWeekDayKPctChg = thisWeekDayKData.stream().filter(p -> !p.getPctChg().isEmpty()).map(p -> Double.parseDouble(p.getPctChg())).mapToDouble(p -> p).sum();
+            if (thisWeekDayKPctChg < 0) {
                 return false;
             }
         }
+
         return true;
     }
 

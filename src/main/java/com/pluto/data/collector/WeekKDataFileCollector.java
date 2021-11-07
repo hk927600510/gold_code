@@ -19,6 +19,8 @@ public class WeekKDataFileCollector extends AbstractFileCollector<Map<String, Ba
 
     private String bsn_date;
 
+    private Reader<Map<String, BasicKData>> reader;
+
     public WeekKDataFileCollector(String bsn_date) {
         this.bsn_date = bsn_date;
     }
@@ -26,7 +28,7 @@ public class WeekKDataFileCollector extends AbstractFileCollector<Map<String, Ba
     @Override
     public void collect() {
         if (!finish()) {
-        //if (false) {
+            //if (false) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(CodeHelper.transToDate(bsn_date));
             String collectEndDate = CodeHelper.formatDate(calendar.getTime());
@@ -53,7 +55,10 @@ public class WeekKDataFileCollector extends AbstractFileCollector<Map<String, Ba
 
     @Override
     public Reader<Map<String, BasicKData>> getReader() {
-        return new WeekKDataReader(getDataPath());
+        if (reader == null) {
+            reader = new WeekKDataReader(getDataPath());
+        }
+        return reader;
     }
 
     @Override

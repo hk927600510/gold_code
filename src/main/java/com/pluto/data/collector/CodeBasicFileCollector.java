@@ -4,6 +4,7 @@ import com.pluto.bean.CodeBasic;
 import com.pluto.data.reader.CodeBasicReader;
 import com.pluto.data.reader.Reader;
 import com.pluto.helper.CodeHelper;
+import com.pluto.helper.LogUtils;
 
 import java.io.File;
 import java.util.Map;
@@ -17,6 +18,8 @@ public class CodeBasicFileCollector extends AbstractFileCollector<Map<String, Co
 
     private String bsn_date;
 
+    private Reader<Map<String, CodeBasic>> reader;
+
     public CodeBasicFileCollector(String bsn_date) {
         this.bsn_date = bsn_date;
     }
@@ -24,7 +27,7 @@ public class CodeBasicFileCollector extends AbstractFileCollector<Map<String, Co
     @Override
     public void collect() {
         if (!finish()) {
-       // if (false) {
+            // if (false) {
             runCmds("python", "pythonJob/all_code.py", bsn_date);
         }
     }
@@ -37,7 +40,11 @@ public class CodeBasicFileCollector extends AbstractFileCollector<Map<String, Co
 
     @Override
     public Reader<Map<String, CodeBasic>> getReader() {
-        return new CodeBasicReader(getDataPath());
+        if (reader == null) {
+            reader = new CodeBasicReader(getDataPath());
+            LogUtils.log(getClass().getSimpleName() + "getReader: dataPath=" + getDataPath());
+        }
+        return reader;
     }
 
     @Override

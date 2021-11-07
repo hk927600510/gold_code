@@ -19,6 +19,8 @@ public class DayKDataFileCollector extends AbstractFileCollector<Map<String, Day
 
     private String bsn_date;
 
+    private Reader<Map<String, DayKData>> reader;
+
     public DayKDataFileCollector(String bsn_date) {
         this.bsn_date = bsn_date;
     }
@@ -53,7 +55,10 @@ public class DayKDataFileCollector extends AbstractFileCollector<Map<String, Day
 
     @Override
     public Reader<Map<String, DayKData>> getReader() {
-        return new DayKDataReader(getDataPath());
+        if (reader == null) {
+            reader = new DayKDataReader(getDataPath());
+        }
+        return reader;
     }
 
     @Override

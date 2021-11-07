@@ -3,6 +3,7 @@ package com.pluto.service;
 import com.pluto.bean.CodeBasic;
 import com.pluto.compute.strategy.Strategy;
 import com.pluto.compute.strategy.impl.FirstStrategy;
+import com.pluto.compute.strategy.impl.NewHighStrategy;
 import com.pluto.data.collector.CodeBasicFileCollector;
 import com.pluto.data.collector.Collector;
 import com.pluto.data.collector.DayKDataFileCollector;
@@ -74,7 +75,7 @@ public enum GoldCodeServiceInstance {
     }
 
     private void sendEmail() throws Exception {
-        MailHelper.sendMail(inputDate,resultPathList);
+        MailHelper.sendMail(inputDate, resultPathList);
     }
 
     private void clear() {
@@ -138,6 +139,7 @@ public enum GoldCodeServiceInstance {
 
     private void initStrategyList() {
         strategyList.add(new FirstStrategy(bsn_date, beforeCollectorMap, collectorMap));
+        strategyList.add(new NewHighStrategy(bsn_date, beforeCollectorMap, collectorMap));
     }
 
     private String checkInputDate(String date) {

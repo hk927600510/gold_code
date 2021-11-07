@@ -4,7 +4,6 @@ import com.pluto.bean.BasicKData;
 import com.pluto.data.reader.Reader;
 import com.pluto.data.reader.WeekKDataReader;
 import com.pluto.helper.CodeHelper;
-import com.pluto.helper.LogUtils;
 
 import java.io.File;
 import java.util.Calendar;
@@ -39,24 +38,14 @@ public class WeekKDataFileCollector extends AbstractFileCollector<Map<String, Ba
     }
 
     @Override
-    public boolean hasFinish() {
-        File file = new File(getDataPath());
-        if (file.exists()) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(CodeHelper.transToDate(bsn_date));
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            LogUtils.log("week k lastModified=" + file.lastModified() + " calendar=" + calendar.getTimeInMillis());
-            return file.lastModified() > calendar.getTimeInMillis();
-        }
-        return false;
+    public boolean finish() {
+        return true;
     }
 
     @Override
     public Reader<Map<String, BasicKData>> getReader() {
         if (reader == null) {
-            reader = new WeekKDataReader(getDataPath());
+            reader = new WeekKDataReader();
         }
         return reader;
     }

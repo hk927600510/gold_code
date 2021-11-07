@@ -39,24 +39,14 @@ public class DayKDataFileCollector extends AbstractFileCollector<Map<String, Day
     }
 
     @Override
-    public boolean hasFinish() {
-        File file = new File(getDataPath());
-        if (file.exists()) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(CodeHelper.transToDate(bsn_date));
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            LogUtils.log("day k lastModified=" + file.lastModified() + " calendar=" + calendar.getTimeInMillis());
-            return file.lastModified() > calendar.getTimeInMillis();
-        }
-        return false;
+    public boolean finish() {
+        return true;
     }
 
     @Override
     public Reader<Map<String, DayKData>> getReader() {
         if (reader == null) {
-            reader = new DayKDataReader(getDataPath());
+            reader = new DayKDataReader();
         }
         return reader;
     }

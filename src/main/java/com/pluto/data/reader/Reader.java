@@ -12,7 +12,7 @@ public interface Reader<T> {
      *
      * @return
      */
-    T getDataAll();
+    T getDataAll() ;
 
     /**
      * 根据条件获取数据

@@ -4,7 +4,6 @@ import com.pluto.bean.CodeBasic;
 import com.pluto.data.reader.CodeBasicReader;
 import com.pluto.data.reader.Reader;
 import com.pluto.helper.CodeHelper;
-import com.pluto.helper.LogUtils;
 
 import java.io.File;
 import java.util.Map;
@@ -33,16 +32,14 @@ public class CodeBasicFileCollector extends AbstractFileCollector<Map<String, Co
     }
 
     @Override
-    public boolean hasFinish() {
-        File dataFile = new File(getDataPath());
-        return dataFile.exists();
+    public boolean finish() {
+        return true;
     }
 
     @Override
     public Reader<Map<String, CodeBasic>> getReader() {
         if (reader == null) {
-            reader = new CodeBasicReader(getDataPath());
-            LogUtils.log(getClass().getSimpleName() + "getReader: dataPath=" + getDataPath());
+            reader = new CodeBasicReader();
         }
         return reader;
     }

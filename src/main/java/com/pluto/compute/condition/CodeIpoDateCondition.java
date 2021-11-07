@@ -3,7 +3,6 @@ package com.pluto.compute.condition;
 import com.pluto.bean.CodeBasic;
 import com.pluto.data.collector.Collector;
 import com.pluto.helper.CodeHelper;
-import com.pluto.helper.LogUtils;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -38,6 +37,10 @@ public class CodeIpoDateCondition extends AbstractCondition {
     public boolean check(String code) {
         Map<String, CodeBasic> codeBasicMap = getCodeBasicReader().getDataByCondition(code);
         CodeBasic codeBasic = codeBasicMap.get(code);
+        // 没有上市时间就相当于满足条件吧
+        if (codeBasic.getIpoDate() == null) {
+            return true;
+        }
         return codeBasic.getIpoDate().compareTo(getConditionDate()) <= 0;
     }
 

@@ -33,13 +33,6 @@ public abstract class AbstractFileCollector<T> implements Collector<T> {
         return -1;
     }
 
-    @Override
-    public boolean finish() {
-        boolean flag = hasFinish();
-        LogUtils.log(getClass().getSimpleName() + " finish result=" + flag);
-        return flag;
-    }
-
     /**
      * 获取数据文件path
      *
@@ -47,10 +40,4 @@ public abstract class AbstractFileCollector<T> implements Collector<T> {
      */
     abstract String getDataPath();
 
-    /**
-     * 判断是否已经获取数据
-     *
-     * @return
-     */
-    abstract boolean hasFinish();
 }

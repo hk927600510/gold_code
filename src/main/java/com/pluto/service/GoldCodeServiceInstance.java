@@ -49,7 +49,7 @@ public enum GoldCodeServiceInstance {
     /**
      * 开始任务
      */
-    public void start(String date) {
+    public void start(String date) throws Exception {
         inputDate = checkInputDate(date);
         LogUtils.log("开始任务,inputDate=" + inputDate);
         LogUtils.log("DataHome=" + CodeHelper.getCodeDataHomePath());
@@ -68,7 +68,7 @@ public enum GoldCodeServiceInstance {
         codeAnalysis();
         LogUtils.log("股票分析完成");
         // 发送邮件
-        // sendEmail();
+        sendEmail();
         LogUtils.log("发送邮件完成");
     }
 

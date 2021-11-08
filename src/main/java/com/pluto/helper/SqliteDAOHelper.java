@@ -21,8 +21,8 @@ import java.util.List;
  */
 public class SqliteDAOHelper {
 
-    //private static String DB_URL = "jdbc:sqlite:" + CodeHelper.getCodeDataHomePath() + File.separator + "gold_code.db";
-    private static String DB_URL = "jdbc:sqlite:/Users/kevin/Works/github/project/gold_code/codeData/sqlite" + File.separator + "gold_code.db";
+    private static String DB_URL = "jdbc:sqlite:" + CodeHelper.getCodeDataHomePath() + File.separator + "sqlite" + File.separator + "gold_code.db";
+    //private static String DB_URL = "jdbc:sqlite:/Users/kevin/Works/github/project/gold_code/codeData/sqlite" + File.separator + "gold_code.db";
 
     private static String CLASS_NAME = "org.sqlite.JDBC";
 

@@ -42,7 +42,9 @@ public class NewHighStrategy extends AbstractStrategy {
         Map<String, CodeBasic> allCodeBasic = ReaderManager.getCodeBasicReader().getDataAll();
         int count = 0;
         for (String key : allCodeBasic.keySet()) {
-            LogUtils.log(getName() + " begin check code=" + key + " count=" + (count++));
+            if (count % 500 == 0) {
+                LogUtils.log(getName() + " begin check code=" + key + " count=" + (count++));
+            }
             try {
                 if (checkCondition(key)) {
                     result.add(allCodeBasic.get(key));

@@ -46,7 +46,7 @@ public class SqliteDAOHelper {
                 codeBasic.setType(rs.getString("type"));
                 codeBasic.setStatus(rs.getString("status"));
                 codeBasic.setIndustryUpdateDate(rs.getString("updateDate"));
-                codeBasic.setIndustry(rs.getString("industry"));
+                codeBasic.setIndustry(rs.getString("industry") == null ? "" : rs.getString("industry"));
                 codeBasic.setIndustryClassification(rs.getString("industryClassification"));
                 codeBasicList.add(codeBasic);
             }

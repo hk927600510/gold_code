@@ -2,8 +2,7 @@ package com.pluto.compute.condition;
 
 import com.pluto.bean.DayKData;
 import com.pluto.compute.filter.DataFilter;
-import com.pluto.data.collector.Collector;
-import com.pluto.helper.LogUtils;
+import com.pluto.data.reader.ReaderManager;
 
 import java.util.List;
 import java.util.Map;
@@ -17,14 +16,11 @@ import java.util.stream.Collectors;
  */
 public class DayKNewHighRecentCondition extends AbstractCondition {
 
-    private Map<String, Collector> collectorMap;
-
     private String dataBegin;
 
     private String dataEnd;
 
-    public DayKNewHighRecentCondition(Map<String, Collector> collectorMap, String dataBegin, String dataEnd) {
-        this.collectorMap = collectorMap;
+    public DayKNewHighRecentCondition(String dataBegin, String dataEnd) {
         this.dataBegin = dataBegin;
         this.dataEnd = dataEnd;
     }
@@ -36,7 +32,7 @@ public class DayKNewHighRecentCondition extends AbstractCondition {
 
     @Override
     public boolean check(String code) {
-        Map<String, DayKData> dateAndDayKMap = getDayKReader().getDataByCondition(code);
+        Map<String, DayKData> dateAndDayKMap = ReaderManager.getDayKDataReader().getDataByCondition(code);
         List<DayKData> filterData = dateAndDayKMap.values().stream().filter(p -> !isTradeSuspend(p)).filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).collect(Collectors.toList());
         OptionalDouble max = filterData.stream().mapToDouble(p -> Double.parseDouble(p.getClose())).max();
         DayKData today = dateAndDayKMap.get(dataEnd);
@@ -45,10 +41,5 @@ public class DayKNewHighRecentCondition extends AbstractCondition {
         }
         return false;
 
-    }
-
-    @Override
-    Map<String, Collector> getCollectorMap() {
-        return collectorMap;
     }
 }

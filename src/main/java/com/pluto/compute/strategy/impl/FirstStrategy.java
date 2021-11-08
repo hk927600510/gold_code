@@ -5,8 +5,8 @@ import com.pluto.compute.condition.CodeIpoDateCondition;
 import com.pluto.compute.condition.Condition;
 import com.pluto.compute.condition.DayKRedCountCondition;
 import com.pluto.compute.condition.WeekKRedCountCondition;
-import com.pluto.data.collector.Collector;
 import com.pluto.data.reader.Reader;
+import com.pluto.data.reader.ReaderManager;
 import com.pluto.helper.CodeHelper;
 import com.pluto.helper.LogUtils;
 
@@ -23,24 +23,15 @@ public class FirstStrategy extends AbstractStrategy {
 
     private String bsn_date;
 
-    private Map<String, Collector> collectorMap;
-
-    private Map<String, Collector> beforeCollectorMap;
-
     private List<Condition> conditionList;
 
-    public FirstStrategy(String bsn_date, Map<String, Collector> beforeCollectorMap, Map<String, Collector> collectorMap) {
+    public FirstStrategy(String bsn_date) {
         this.bsn_date = bsn_date;
-        this.collectorMap = collectorMap;
-        this.beforeCollectorMap = beforeCollectorMap;
         this.conditionList = new ArrayList<>();
-        String dataBeginDate = CodeHelper.getBsnDateWithInterval(beforeCollectorMap, bsn_date, -15);
-        conditionList.add(new CodeIpoDateCondition(collectorMap, bsn_date));
-        conditionList.add(new DayKRedCountCondition(collectorMap, dataBeginDate, bsn_date));
-        // conditionList.add(new DayKPctChgLimitCondition(collectorMap, dataBeginDate, bsn_date));
-        conditionList.add(new WeekKRedCountCondition(collectorMap, dataBeginDate, bsn_date));
-        // conditionList.add(new WeekKOpenAndCloseAvgCondition(collectorMap, dataBeginDate, bsn_date));
-        // conditionList.add(new WeekKOpenAndCloseCondition(collectorMap, dataBeginDate, bsn_date));
+        String dataBeginDate = CodeHelper.getBsnDateWithInterval(bsn_date, -15);
+        conditionList.add(new CodeIpoDateCondition(bsn_date));
+        conditionList.add(new DayKRedCountCondition(dataBeginDate, bsn_date));
+        conditionList.add(new WeekKRedCountCondition(dataBeginDate, bsn_date));
     }
 
     @Override
@@ -51,9 +42,11 @@ public class FirstStrategy extends AbstractStrategy {
     @Override
     public List<CodeBasic> strategyMatch() {
         List<CodeBasic> result = new ArrayList<>();
-        Reader<Map<String, CodeBasic>> reader = (Reader<Map<String, CodeBasic>>) collectorMap.get("CodeBasic").getReader();
+        Reader<Map<String, CodeBasic>> reader = ReaderManager.getCodeBasicReader();
         Map<String, CodeBasic> allCodeBasic = reader.getDataAll();
+        int count = 0;
         for (String key : allCodeBasic.keySet()) {
+            LogUtils.log(getName() + " begin check code=" + key + " count=" + (count++));
             try {
                 if (checkCondition(key)) {
                     result.add(allCodeBasic.get(key));

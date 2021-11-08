@@ -7,7 +7,7 @@ import com.pluto.helper.LogUtils;
  * @version 5.1
  * Created by Kevin.H on 2021/11/1
  */
-public abstract class AbstractFileCollector<T> implements Collector<T> {
+public abstract class AbstractFileCollector implements Collector {
 
     protected int runCmd(String cmd) {
         try {
@@ -33,11 +33,10 @@ public abstract class AbstractFileCollector<T> implements Collector<T> {
         return -1;
     }
 
-    /**
-     * 获取数据文件path
-     *
-     * @return
-     */
-    abstract String getDataPath();
+
+    @Override
+    public boolean finish() {
+        return false;
+    }
 
 }

@@ -2,8 +2,7 @@ package com.pluto.compute.condition;
 
 import com.pluto.bean.DayKData;
 import com.pluto.compute.filter.DataFilter;
-import com.pluto.data.collector.Collector;
-import com.pluto.helper.LogUtils;
+import com.pluto.data.reader.ReaderManager;
 
 import java.util.Map;
 
@@ -14,14 +13,11 @@ import java.util.Map;
  */
 public class DayKPctChgLimitCondition extends AbstractCondition {
 
-    private Map<String, Collector> collectorMap;
-
     private String dataBegin;
 
     private String dataEnd;
 
-    public DayKPctChgLimitCondition(Map<String, Collector> collectorMap, String dataBegin, String dataEnd) {
-        this.collectorMap = collectorMap;
+    public DayKPctChgLimitCondition(String dataBegin, String dataEnd) {
         this.dataBegin = dataBegin;
         this.dataEnd = dataEnd;
     }
@@ -33,7 +29,7 @@ public class DayKPctChgLimitCondition extends AbstractCondition {
 
     @Override
     public boolean check(String code) {
-        Map<String, DayKData> dateAndDayKMap = getDayKReader().getDataByCondition(code);
+        Map<String, DayKData> dateAndDayKMap = ReaderManager.getDayKDataReader().getDataByCondition(code);
         long count = dateAndDayKMap.values().stream().filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).filter(this::filterPctChgLimit).count();
         return count == 0;
     }
@@ -45,8 +41,4 @@ public class DayKPctChgLimitCondition extends AbstractCondition {
         return Double.parseDouble(data.getPctChg()) < -4;
     }
 
-    @Override
-    Map<String, Collector> getCollectorMap() {
-        return collectorMap;
-    }
 }

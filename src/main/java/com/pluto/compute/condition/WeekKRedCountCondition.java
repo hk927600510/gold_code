@@ -3,8 +3,7 @@ package com.pluto.compute.condition;
 import com.pluto.bean.BasicKData;
 import com.pluto.bean.DayKData;
 import com.pluto.compute.filter.DataFilter;
-import com.pluto.data.collector.Collector;
-import com.pluto.helper.LogUtils;
+import com.pluto.data.reader.ReaderManager;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,49 +18,51 @@ import java.util.stream.Collectors;
  */
 public class WeekKRedCountCondition extends AbstractCondition {
 
-    private Map<String, Collector> collectorMap;
-
     private String dataBegin;
 
     private String dataEnd;
 
-    public WeekKRedCountCondition(Map<String, Collector> collectorMap, String dataBegin, String dataEnd) {
-        this.collectorMap = collectorMap;
+    public WeekKRedCountCondition(String dataBegin, String dataEnd) {
         this.dataBegin = dataBegin;
         this.dataEnd = dataEnd;
     }
 
     @Override
     public String getName() {
-        return "3个周k涨幅大于0";
+        return "3个周k开盘价趋势向上";
     }
 
     @Override
     public boolean check(String code) {
-        Map<String, BasicKData> dateAndWeekKMap = getWeekKReader().getDataByCondition(code);
+        Map<String, BasicKData> dateAndWeekKMap = ReaderManager.getWeekKDataReader().getDataByCondition(code);
         List<String> dateList = new ArrayList<>(dateAndWeekKMap.keySet()).stream().filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).sorted(Comparator.comparing(String::toString).reversed()).collect(Collectors.toList());
-        List<String> twoWeekDates = dateList.size() < 2 ? dateList : dateList.subList(0, 2);
-        if (!twoWeekDates.isEmpty()) {
-            for (String date : twoWeekDates) {
-                BasicKData data = dateAndWeekKMap.get(date);
-                if (data != null && !data.getPctChg().isEmpty() && Double.parseDouble(data.getPctChg()) < 0) {
-                    return false;
-                }
+        if (dateList.size() < 3) {
+            return false;
+        }
+        String firstWeekKDate = dateList.get(0);
+        if (dataEnd.equals(firstWeekKDate)) {
+            List<String> threeWeekDates = dateList.subList(0, 3);
+            String firstOpen = dateAndWeekKMap.get(threeWeekDates.get(0)).getOpen();
+            String secondOpen = dateAndWeekKMap.get(threeWeekDates.get(1)).getOpen();
+            String thirdOpen = dateAndWeekKMap.get(threeWeekDates.get(2)).getOpen();
+            if (Double.parseDouble(firstOpen) < Double.parseDouble(secondOpen) || Double.parseDouble(secondOpen) < Double.parseDouble(thirdOpen)) {
+                return false;
             }
-
-            Map<String, DayKData> dateAndDayKMap = getDayKReader().getDataByCondition(code);
-            List<BasicKData> thisWeekDayKData = dateAndDayKMap.values().stream().filter(p -> p.getDate().compareTo(twoWeekDates.get(0)) > 0).collect(Collectors.toList());
-            double thisWeekDayKPctChg = thisWeekDayKData.stream().filter(p -> !p.getPctChg().isEmpty()).map(p -> Double.parseDouble(p.getPctChg())).mapToDouble(p -> p).sum();
-            if (thisWeekDayKPctChg < 0) {
+        } else {
+            List<String> twoWeekDates = dateList.subList(0, 2);
+            String firstOpen = dateAndWeekKMap.get(twoWeekDates.get(0)).getOpen();
+            String secondOpen = dateAndWeekKMap.get(twoWeekDates.get(1)).getOpen();
+            if (Double.parseDouble(firstOpen) < Double.parseDouble(secondOpen)) {
+                return false;
+            }
+            Map<String, DayKData> dateAndDayKMap = ReaderManager.getDayKDataReader().getDataByCondition(code);
+            List<BasicKData> thisWeekDayKData = dateAndDayKMap.values().stream().filter(p -> p.getDate().compareTo(twoWeekDates.get(0)) > 0).sorted(Comparator.comparing(BasicKData::getDate).reversed()).collect(Collectors.toList());
+            String mondayOpen = thisWeekDayKData.get(0).getOpen();
+            if ((Double.parseDouble(mondayOpen) < Double.parseDouble(firstOpen))) {
                 return false;
             }
         }
 
         return true;
-    }
-
-    @Override
-    Map<String, Collector> getCollectorMap() {
-        return collectorMap;
     }
 }

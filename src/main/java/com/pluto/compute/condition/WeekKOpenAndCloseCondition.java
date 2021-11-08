@@ -2,9 +2,7 @@ package com.pluto.compute.condition;
 
 import com.pluto.bean.BasicKData;
 import com.pluto.compute.filter.DataFilter;
-import com.pluto.data.collector.Collector;
-import com.pluto.data.reader.Reader;
-import com.pluto.helper.LogUtils;
+import com.pluto.data.reader.ReaderManager;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,16 +15,13 @@ import java.util.stream.Collectors;
  * @version 5.1
  * Created by Kevin.H on 2021/11/3
  */
-public class WeekKOpenAndCloseCondition extends AbstractCondition{
-
-    private Map<String, Collector> collectorMap;
+public class WeekKOpenAndCloseCondition extends AbstractCondition {
 
     private String dataBegin;
 
     private String dataEnd;
 
-    public WeekKOpenAndCloseCondition(Map<String, Collector> collectorMap, String dataBegin, String dataEnd) {
-        this.collectorMap = collectorMap;
+    public WeekKOpenAndCloseCondition(String dataBegin, String dataEnd) {
         this.dataBegin = dataBegin;
         this.dataEnd = dataEnd;
     }
@@ -39,14 +34,9 @@ public class WeekKOpenAndCloseCondition extends AbstractCondition{
 
     @Override
     public boolean check(String code) {
-        Map<String, BasicKData> dateAndWeekKMap = getWeekKReader().getDataByCondition(code);
+        Map<String, BasicKData> dateAndWeekKMap = ReaderManager.getWeekKDataReader().getDataByCondition(code);
         List<String> dateList = new ArrayList<>(dateAndWeekKMap.keySet()).stream().filter(p -> DataFilter.dateFilterByBeginAndEndDate(p, dataBegin, dataEnd)).sorted(Comparator.comparing(String::toString).reversed()).collect(Collectors.toList());
         BasicKData lastedWeekKData = dateAndWeekKMap.get(dateList.get(0));
         return Double.parseDouble(lastedWeekKData.getClose()) >= Double.parseDouble(lastedWeekKData.getOpen());
-    }
-
-    @Override
-    Map<String, Collector> getCollectorMap() {
-        return collectorMap;
     }
 }

@@ -4,8 +4,7 @@ import com.pluto.bean.CodeBasic;
 import com.pluto.compute.condition.CodeIpoDateCondition;
 import com.pluto.compute.condition.Condition;
 import com.pluto.compute.condition.DayKNewHighRecentCondition;
-import com.pluto.data.collector.Collector;
-import com.pluto.data.reader.Reader;
+import com.pluto.data.reader.ReaderManager;
 import com.pluto.helper.CodeHelper;
 import com.pluto.helper.LogUtils;
 
@@ -22,20 +21,14 @@ public class NewHighStrategy extends AbstractStrategy {
 
     private String bsn_date;
 
-    private Map<String, Collector> collectorMap;
-
-    private Map<String, Collector> beforeCollectorMap;
-
     private List<Condition> conditionList;
 
-    public NewHighStrategy(String bsn_date, Map<String, Collector> beforeCollectorMap, Map<String, Collector> collectorMap) {
+    public NewHighStrategy(String bsn_date) {
         this.bsn_date = bsn_date;
-        this.collectorMap = collectorMap;
-        this.beforeCollectorMap = beforeCollectorMap;
         this.conditionList = new ArrayList<>();
-        conditionList.add(new CodeIpoDateCondition(collectorMap, bsn_date));
-        String dateBefore60 = CodeHelper.getBsnDateWithInterval(beforeCollectorMap, bsn_date, -60);
-        conditionList.add(new DayKNewHighRecentCondition(collectorMap, dateBefore60, bsn_date));
+        conditionList.add(new CodeIpoDateCondition(bsn_date));
+        String dateBefore60 = CodeHelper.getBsnDateWithInterval(bsn_date, -60);
+        conditionList.add(new DayKNewHighRecentCondition(dateBefore60, bsn_date));
     }
 
     @Override
@@ -46,9 +39,10 @@ public class NewHighStrategy extends AbstractStrategy {
     @Override
     public List<CodeBasic> strategyMatch() {
         List<CodeBasic> result = new ArrayList<>();
-        Reader<Map<String, CodeBasic>> reader = (Reader<Map<String, CodeBasic>>) collectorMap.get("CodeBasic").getReader();
-        Map<String, CodeBasic> allCodeBasic = reader.getDataAll();
+        Map<String, CodeBasic> allCodeBasic = ReaderManager.getCodeBasicReader().getDataAll();
+        int count = 0;
         for (String key : allCodeBasic.keySet()) {
+            LogUtils.log(getName() + " begin check code=" + key + " count=" + (count++));
             try {
                 if (checkCondition(key)) {
                     result.add(allCodeBasic.get(key));

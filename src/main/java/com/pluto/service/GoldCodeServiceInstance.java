@@ -18,9 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -40,9 +38,9 @@ public enum GoldCodeServiceInstance {
 
     private String outputPath;
 
-    private final Map<String, Collector> beforeCollectorMap = new HashMap<>();
+    private final List<Collector> beforeCollectors = new ArrayList<>();
 
-    private final Map<String, Collector> collectorMap = new HashMap<>();
+    private final List<Collector> collectors = new ArrayList<>();
 
     private final List<Strategy> strategyList = new ArrayList<>();
 
@@ -51,7 +49,7 @@ public enum GoldCodeServiceInstance {
     /**
      * 开始任务
      */
-    public void start(String date) throws Exception {
+    public void start(String date) {
         inputDate = checkInputDate(date);
         LogUtils.log("开始任务,inputDate=" + inputDate);
         LogUtils.log("DataHome=" + CodeHelper.getCodeDataHomePath());
@@ -70,7 +68,7 @@ public enum GoldCodeServiceInstance {
         codeAnalysis();
         LogUtils.log("股票分析完成");
         // 发送邮件
-        sendEmail();
+        // sendEmail();
         LogUtils.log("发送邮件完成");
     }
 
@@ -89,26 +87,26 @@ public enum GoldCodeServiceInstance {
 
     private void beforeDataCollect() {
         initBeforeCollectorMap();
-        for (Collector collector : beforeCollectorMap.values()) {
+        for (Collector collector : beforeCollectors) {
             collector.collect();
         }
     }
 
     private void initBeforeCollectorMap() {
-        beforeCollectorMap.put("TradeDate", new TradeDateFileCollector(inputDate));
+        beforeCollectors.add(new TradeDateFileCollector(inputDate));
     }
 
     private void initCollectorMap() {
-        collectorMap.put("CodeBasic", new CodeBasicFileCollector(bsn_date));
-        collectorMap.put("DayKData", new DayKDataFileCollector(bsn_date));
-        collectorMap.put("WeekKData", new WeekKDataFileCollector(bsn_date));
+        collectors.add(new CodeBasicFileCollector(bsn_date));
+        collectors.add(new DayKDataFileCollector(bsn_date));
+        collectors.add(new WeekKDataFileCollector(bsn_date));
     }
 
     /**
      * 时间条件初始化
      */
     private void dateInit(String date) {
-        bsn_date = CodeHelper.getBsnDateWithInterval(beforeCollectorMap, date, 0);
+        bsn_date = CodeHelper.getBsnDateWithInterval(date, 0);
         LogUtils.log(getClass().getSimpleName() + ": bsn_date=" + bsn_date);
     }
 
@@ -117,7 +115,7 @@ public enum GoldCodeServiceInstance {
      */
     private void dataCollect() {
         initCollectorMap();
-        for (Collector collector : collectorMap.values()) {
+        for (Collector collector : collectors) {
             collector.collect();
         }
     }
@@ -138,8 +136,8 @@ public enum GoldCodeServiceInstance {
     }
 
     private void initStrategyList() {
-        strategyList.add(new FirstStrategy(bsn_date, beforeCollectorMap, collectorMap));
-        strategyList.add(new NewHighStrategy(bsn_date, beforeCollectorMap, collectorMap));
+        strategyList.add(new FirstStrategy(bsn_date));
+        strategyList.add(new NewHighStrategy(bsn_date));
     }
 
     private String checkInputDate(String date) {

@@ -1,7 +1,7 @@
 package com.pluto.compute.condition;
 
 import com.pluto.bean.CodeBasic;
-import com.pluto.data.collector.Collector;
+import com.pluto.data.reader.ReaderManager;
 import com.pluto.helper.CodeHelper;
 
 import java.util.Calendar;
@@ -14,19 +14,12 @@ import java.util.Map;
  */
 public class CodeIpoDateCondition extends AbstractCondition {
 
-    private Map<String, Collector> collectorMap;
-
     private String bsnDate;
 
-    public CodeIpoDateCondition(Map<String, Collector> collectorMap, String bsnDate) {
-        this.collectorMap = collectorMap;
+    public CodeIpoDateCondition(String bsnDate) {
         this.bsnDate = bsnDate;
     }
 
-    @Override
-    Map<String, Collector> getCollectorMap() {
-        return collectorMap;
-    }
 
     @Override
     public String getName() {
@@ -35,7 +28,7 @@ public class CodeIpoDateCondition extends AbstractCondition {
 
     @Override
     public boolean check(String code) {
-        Map<String, CodeBasic> codeBasicMap = getCodeBasicReader().getDataByCondition(code);
+        Map<String, CodeBasic> codeBasicMap = ReaderManager.getCodeBasicReader().getDataByCondition(code);
         CodeBasic codeBasic = codeBasicMap.get(code);
         // 没有上市时间就相当于满足条件吧
         if (codeBasic.getIpoDate() == null) {

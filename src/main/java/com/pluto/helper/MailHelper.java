@@ -32,8 +32,8 @@ public class MailHelper {
     public static String myEmailSMTPHost = "smtp.exmail.qq.com";
 
     // 收件人邮箱（替换为自己知道的有效邮箱）
-    //public static String[] receiveMailAccount = {"927600510@qq.com"};
-    public static String[] receiveMailAccount = {"927600510@qq.com", "417983429@qq.com"};
+    public static String[] receiveMailAccount = {"927600510@qq.com"};
+    //public static String[] receiveMailAccount = {"927600510@qq.com", "417983429@qq.com"};
 
     public static void main(String[] args) throws Exception {
         sendMail("2021-11-04", Arrays.asList("/Users/kevin/Works/github/project/gold_code/codeData/result/2021-11-04/1号策略.csv"));

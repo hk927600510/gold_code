@@ -1,8 +1,7 @@
 package com.pluto.helper;
 
 import com.pluto.bean.TradeDate;
-import com.pluto.data.collector.Collector;
-import com.pluto.data.reader.Reader;
+import com.pluto.data.reader.ReaderManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,7 +17,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +63,7 @@ public class CodeHelper {
 
     public static String getCodeDataHomePath() {
         //return "/root/projects/gold_code/codeData";
-         return "./codeData";
+        return "./codeData";
     }
 
     public static String formatDate(Date date) {
@@ -94,9 +92,8 @@ public class CodeHelper {
         file.delete();
     }
 
-    public static String getBsnDateWithInterval(Map<String, Collector> beforeCollectorMap, String date, int interval) {
-        Reader<List<TradeDate>> reader = (Reader<List<TradeDate>>) beforeCollectorMap.get("TradeDate").getReader();
-        List<TradeDate> tradeDateList = reader.getDataAll();
+    public static String getBsnDateWithInterval(String date, int interval) {
+        List<TradeDate> tradeDateList = ReaderManager.getTradeDateReader().getDataAll();
         List<TradeDate> filterTradeDateList = tradeDateList.stream().filter(p -> p.getCalendarDate().compareTo(date) <= 0 && "1" .equals(p.getIsTradingDay())).collect(Collectors.toList());
         return filterTradeDateList.get(Math.abs(interval)).getCalendarDate();
     }

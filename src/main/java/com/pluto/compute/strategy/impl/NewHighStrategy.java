@@ -43,8 +43,9 @@ public class NewHighStrategy extends AbstractStrategy {
         int count = 0;
         for (String key : allCodeBasic.keySet()) {
             if (count % 500 == 0) {
-                LogUtils.log(getName() + " begin check code=" + key + " count=" + (count++));
+                LogUtils.log(getName() + " begin  count=" + count);
             }
+            count++;
             try {
                 if (checkCondition(key)) {
                     result.add(allCodeBasic.get(key));

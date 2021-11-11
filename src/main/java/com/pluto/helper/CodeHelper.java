@@ -1,5 +1,7 @@
 package com.pluto.helper;
 
+import com.pluto.bean.DayKData;
+import com.pluto.bean.SlopeBean;
 import com.pluto.bean.TradeDate;
 import com.pluto.data.reader.ReaderManager;
 
@@ -15,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,7 +65,7 @@ public class CodeHelper {
     }
 
     public static String getCodeDataHomePath() {
-        //return "/root/projects/gold_code/codeData";
+        // return "/Users/kevin/Works/github/project/gold_code/codeData";
         return "./codeData";
     }
 
@@ -94,7 +97,7 @@ public class CodeHelper {
 
     public static String getBsnDateWithInterval(String date, int interval) {
         List<TradeDate> tradeDateList = ReaderManager.getTradeDateReader().getDataAll();
-        List<TradeDate> filterTradeDateList = tradeDateList.stream().filter(p -> p.getCalendarDate().compareTo(date) <= 0 && "1" .equals(p.getIsTradingDay())).collect(Collectors.toList());
+        List<TradeDate> filterTradeDateList = tradeDateList.stream().filter(p -> p.getCalendarDate().compareTo(date) <= 0 && "1".equals(p.getIsTradingDay())).collect(Collectors.toList());
         return filterTradeDateList.get(Math.abs(interval)).getCalendarDate();
     }
 
@@ -103,6 +106,34 @@ public class CodeHelper {
         calendar.setTime(transToDate(bsnDate));
         calendar.add(Calendar.YEAR, yearInterval);
         return formatDate(calendar.getTime());
+    }
+
+    // 获取k先拟合斜率
+    public static double getKDataSlope(List<DayKData> kDataList) {
+        List<DayKData> sortedData = kDataList.stream().sorted(Comparator.comparing(DayKData::getDate)).collect(Collectors.toList());
+        List<SlopeBean> slopeBeanList = new ArrayList<>();
+        for (int i = 0; i < sortedData.size(); i++) {
+            DayKData kData = sortedData.get(i);
+            if (kData.getPctChg() == null || kData.getPctChg().isEmpty()) {
+                continue;
+            }
+            SlopeBean bean = new SlopeBean();
+            bean.setX(i);
+            bean.setY(Double.parseDouble(kData.getClose()));
+            slopeBeanList.add(bean);
+        }
+
+        if (slopeBeanList.isEmpty() || slopeBeanList.size() < 2) {
+            return 0;
+        }
+
+        int n = slopeBeanList.size();
+        double xySum = slopeBeanList.stream().mapToDouble(p -> p.getX() * p.getY()).sum();
+        double xAvg = slopeBeanList.stream().mapToDouble(SlopeBean::getX).average().getAsDouble();
+        double yAvg = slopeBeanList.stream().mapToDouble(SlopeBean::getY).average().getAsDouble();
+        double x2Sum = slopeBeanList.stream().mapToDouble(p -> p.getX() * p.getX()).sum();
+        return (xySum - n * xAvg * yAvg) / (x2Sum - n * xAvg * xAvg);
+
     }
 
 }

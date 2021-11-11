@@ -4,6 +4,7 @@ import com.pluto.bean.CodeBasic;
 import com.pluto.compute.condition.CodeIpoDateCondition;
 import com.pluto.compute.condition.Condition;
 import com.pluto.compute.condition.DayKRedCountCondition;
+import com.pluto.compute.condition.DayKSlopeCondition;
 import com.pluto.compute.condition.WeekKRedCountCondition;
 import com.pluto.data.reader.Reader;
 import com.pluto.data.reader.ReaderManager;
@@ -32,6 +33,7 @@ public class FirstStrategy extends AbstractStrategy {
         conditionList.add(new CodeIpoDateCondition(bsn_date));
         conditionList.add(new DayKRedCountCondition(dataBeginDate, bsn_date));
         conditionList.add(new WeekKRedCountCondition(dataBeginDate, bsn_date));
+        conditionList.add(new DayKSlopeCondition(dataBeginDate, bsn_date));
     }
 
     @Override
@@ -46,9 +48,10 @@ public class FirstStrategy extends AbstractStrategy {
         Map<String, CodeBasic> allCodeBasic = reader.getDataAll();
         int count = 0;
         for (String key : allCodeBasic.keySet()) {
-            if (count % 500 == 0){
-                LogUtils.log(getName() + " begin check code=" + key + " count=" + (count++));
+            if (count % 500 == 0) {
+                LogUtils.log(getName() + " begin  count=" + count);
             }
+            count++;
             try {
                 if (checkCondition(key)) {
                     result.add(allCodeBasic.get(key));

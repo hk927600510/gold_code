@@ -31,9 +31,21 @@ public class DayKMaCondition extends AbstractCondition {
     public boolean check(String code) {
         Map<String, DayKData> dateAndDayKMap = ReaderManager.getDayKDataReader().getDataByCondition(code);
         List<String> dateList = new ArrayList<>(dateAndDayKMap.keySet()).stream().sorted(Comparator.comparing(String::toString).reversed()).collect(Collectors.toList());
-        if (dateList.size() < 60) {
+        if (dateList.size() < 100) {
             return false;
         }
+
+        for (int i = 0; i < 4; i++) {
+            if (!checkDayKMa(dateAndDayKMap, dateList)) {
+                return false;
+            }
+            dateList.remove(0);
+        }
+
+        return true;
+    }
+
+    private boolean checkDayKMa(Map<String, DayKData> dateAndDayKMap, List<String> dateList) {
         double ma5 = dateList.subList(0, 5).stream().map(dateAndDayKMap::get).mapToDouble(p -> Double.parseDouble(p.getClose())).sum() / 5;
         double ma10 = dateList.subList(0, 10).stream().map(dateAndDayKMap::get).mapToDouble(p -> Double.parseDouble(p.getClose())).sum() / 10;
         double ma20 = dateList.subList(0, 20).stream().map(dateAndDayKMap::get).mapToDouble(p -> Double.parseDouble(p.getClose())).sum() / 20;

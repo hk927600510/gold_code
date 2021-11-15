@@ -42,27 +42,24 @@ public class WeekKRedCountCondition extends AbstractCondition {
         String firstWeekKDate = dateList.get(0);
         if (dataEnd.equals(firstWeekKDate)) {
             List<String> threeWeekDates = dateList.subList(0, 3);
-            String firstOpen = dateAndWeekKMap.get(threeWeekDates.get(0)).getOpen();
-            String secondOpen = dateAndWeekKMap.get(threeWeekDates.get(1)).getOpen();
-            String thirdOpen = dateAndWeekKMap.get(threeWeekDates.get(2)).getOpen();
-            if (Double.parseDouble(firstOpen) < Double.parseDouble(secondOpen) || Double.parseDouble(secondOpen) < Double.parseDouble(thirdOpen)) {
-                return false;
-            }
+            return threeWeekDates.stream().map(dateAndWeekKMap::get).allMatch(this::filterRedWeekKData);
         } else {
             List<String> twoWeekDates = dateList.subList(0, 2);
-            String firstOpen = dateAndWeekKMap.get(twoWeekDates.get(0)).getOpen();
-            String secondOpen = dateAndWeekKMap.get(twoWeekDates.get(1)).getOpen();
-            if (Double.parseDouble(firstOpen) < Double.parseDouble(secondOpen)) {
+            boolean lastTwoWeekFlag = twoWeekDates.stream().map(dateAndWeekKMap::get).allMatch(this::filterRedWeekKData);
+            if (!lastTwoWeekFlag) {
                 return false;
             }
             Map<String, DayKData> dateAndDayKMap = ReaderManager.getDayKDataReader().getDataByCondition(code);
-            List<BasicKData> thisWeekDayKData = dateAndDayKMap.values().stream().filter(p -> p.getDate().compareTo(twoWeekDates.get(0)) > 0).sorted(Comparator.comparing(BasicKData::getDate).reversed()).collect(Collectors.toList());
-            String mondayOpen = thisWeekDayKData.get(0).getOpen();
-            if ((Double.parseDouble(mondayOpen) < Double.parseDouble(firstOpen))) {
-                return false;
-            }
+            List<DayKData> thisWeekDayKData = dateAndDayKMap.values().stream().filter(p -> p.getDate().compareTo(twoWeekDates.get(0)) > 0).sorted(Comparator.comparing(BasicKData::getDate).reversed()).collect(Collectors.toList());
+            double thisWeekPctChg = thisWeekDayKData.stream().filter(p -> !isTradeSuspend(p)).mapToDouble(p -> Double.parseDouble(p.getPctChg())).sum();
+            return thisWeekPctChg >= 0;
         }
+    }
 
-        return true;
+    private boolean filterRedWeekKData(BasicKData data) {
+        if (data.getPctChg() == null || data.getPctChg().isEmpty()) {
+            return true;
+        }
+        return Double.parseDouble(data.getPctChg()) >= 0;
     }
 }

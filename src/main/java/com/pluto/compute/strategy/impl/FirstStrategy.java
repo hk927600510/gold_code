@@ -3,6 +3,7 @@ package com.pluto.compute.strategy.impl;
 import com.pluto.bean.CodeBasic;
 import com.pluto.compute.condition.CodeIpoDateCondition;
 import com.pluto.compute.condition.Condition;
+import com.pluto.compute.condition.DayKMaCondition;
 import com.pluto.compute.condition.DayKRedCountCondition;
 import com.pluto.compute.condition.DayKSlopeCondition;
 import com.pluto.compute.condition.WeekKRedCountCondition;
@@ -34,6 +35,7 @@ public class FirstStrategy extends AbstractStrategy {
         conditionList.add(new DayKRedCountCondition(dataBeginDate, bsn_date));
         conditionList.add(new WeekKRedCountCondition(dataBeginDate, bsn_date));
         conditionList.add(new DayKSlopeCondition(dataBeginDate, bsn_date));
+        conditionList.add(new DayKMaCondition(bsn_date));
     }
 
     @Override

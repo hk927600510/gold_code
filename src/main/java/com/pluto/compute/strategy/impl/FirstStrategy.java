@@ -72,12 +72,4 @@ public class FirstStrategy extends AbstractStrategy {
         return conditionList;
     }
 
-    private boolean checkCondition(String key) {
-        for (Condition condition : getConditions()) {
-            if (!condition.check(key)) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

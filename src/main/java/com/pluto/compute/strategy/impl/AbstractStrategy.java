@@ -24,4 +24,13 @@ public abstract class AbstractStrategy implements Strategy {
 
     abstract List<CodeBasic> strategyMatch();
 
+    protected boolean checkCondition(String key) {
+        for (Condition condition : getConditions()) {
+            if (!condition.check(key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

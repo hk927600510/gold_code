@@ -27,7 +27,6 @@ public class KeepRedStrategy extends AbstractStrategy {
     public KeepRedStrategy(String bsn_date) {
         this.bsn_date = bsn_date;
         this.conditionList = new ArrayList<>();
-        String dataBeginDate = CodeHelper.getBsnDateWithInterval(bsn_date, -15);
         conditionList.add(new CodeIpoDateCondition(bsn_date));
         conditionList.add(new DayKKeepRedCondition(bsn_date));
     }

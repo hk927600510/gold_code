@@ -35,7 +35,7 @@ public class DayKMaCondition extends AbstractCondition {
             return false;
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 1; i++) {
             if (!checkDayKMa(dateAndDayKMap, dateList)) {
                 return false;
             }

@@ -35,14 +35,14 @@ public class DayKMaCondition extends AbstractCondition {
             return false;
         }
 
-        for (int i = 0; i < 1; i++) {
+        int falseCount = 0;
+        for (int i = 0; i < 7; i++) {
             if (!checkDayKMa(dateAndDayKMap, dateList)) {
-                return false;
+                falseCount++;
             }
             dateList.remove(0);
         }
-
-        return true;
+        return falseCount <= 2;
     }
 
     private boolean checkDayKMa(Map<String, DayKData> dateAndDayKMap, List<String> dateList) {

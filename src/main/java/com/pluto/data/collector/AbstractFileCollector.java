@@ -3,6 +3,7 @@ package com.pluto.data.collector;
 import com.pluto.helper.LogUtils;
 
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Kevin.H
@@ -11,30 +12,37 @@ import java.util.Scanner;
  */
 public abstract class AbstractFileCollector implements Collector {
 
-    protected int runCmd(String cmd) {
-        try {
-            LogUtils.log(getClass().getSimpleName() + ": " + cmd);
-            Process process = Runtime.getRuntime().exec(cmd);
-            LogUtils.log("runCmds log : " + readStringFromShell(process, ""));
-            process.waitFor();
-            return process.exitValue();
-        } catch (Exception e) {
-            e.printStackTrace();
+    protected void runCmd(String cmd) throws Exception {
+        LogUtils.log(getClass().getSimpleName() + ": " + cmd);
+        Process process = Runtime.getRuntime().exec(cmd);
+        LogUtils.log("runCmd log : " + readStringFromShell(process, ""));
+        process.waitFor();
+        int result = process.exitValue();
+        if (result != 0) {
+            throw new Exception("runCmds error");
         }
-        return -1;
     }
 
-    protected int runCmds(String... cmds) {
-        try {
-            LogUtils.log(getClass().getSimpleName() + ": " + String.join(" ", cmds));
+    protected void runCmds(String... cmds) throws Exception {
+        int tryTime = 1;
+        while (tryTime <= 3) {
+            LogUtils.log(getClass().getSimpleName() + ": " + String.join(" ", cmds) + " tryTime=" + tryTime);
             Process process = Runtime.getRuntime().exec(cmds);
             LogUtils.log("runCmds log : \n" + readStringFromShell(process, ""));
-            process.waitFor();
-            return process.exitValue();
-        } catch (Exception e) {
-            e.printStackTrace();
+            process.waitFor(30, TimeUnit.MINUTES);
+            int result = process.exitValue();
+            if (result == 0) {
+                LogUtils.log("runCmds success");
+                break;
+            }
+            LogUtils.log("runCmds error");
+            process.destroy();
+            tryTime++;
         }
-        return -1;
+        if (tryTime == 4) {
+            LogUtils.log("runCmds failed");
+            throw new Exception("runCmds failed!!");
+        }
     }
 
 

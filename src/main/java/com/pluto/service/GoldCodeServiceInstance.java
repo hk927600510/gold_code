@@ -86,7 +86,7 @@ public enum GoldCodeServiceInstance {
         outputPathFile.mkdirs();
     }
 
-    private void beforeDataCollect() {
+    private void beforeDataCollect() throws Exception {
         initBeforeCollectorMap();
         for (Collector collector : beforeCollectors) {
             collector.collect();
@@ -114,7 +114,7 @@ public enum GoldCodeServiceInstance {
     /**
      * 数据准备
      */
-    private void dataCollect() {
+    private void dataCollect() throws Exception {
         initCollectorMap();
         for (Collector collector : collectors) {
             collector.collect();

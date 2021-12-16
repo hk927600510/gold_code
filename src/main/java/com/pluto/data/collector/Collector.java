@@ -10,7 +10,7 @@ public interface Collector {
     /**
      * 数据收集
      */
-    void collect();
+    void collect() throws Exception;
 
     /**
      * 收集状态

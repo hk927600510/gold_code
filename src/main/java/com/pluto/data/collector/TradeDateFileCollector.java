@@ -14,7 +14,7 @@ public class TradeDateFileCollector extends AbstractFileCollector {
     }
 
     @Override
-    public void collect() {
+    public void collect() throws Exception {
         if (!finish()) {
             runCmds("python", "pythonJob/sqlite_py/trade_date_sqlit_d.py", date);
         }

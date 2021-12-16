@@ -14,7 +14,7 @@ public class WeekKDataFileCollector extends AbstractFileCollector {
     }
 
     @Override
-    public void collect() {
+    public void collect() throws Exception {
         if (!finish()) {
             runCmds("python", "pythonJob/sqlite_py/week_k_data_sqlite_d.py", bsn_date);
         }

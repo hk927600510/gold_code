@@ -14,7 +14,7 @@ public class CodeBasicFileCollector extends AbstractFileCollector {
     }
 
     @Override
-    public void collect() {
+    public void collect() throws Exception{
         if (!finish()) {
             runCmds("python", "pythonJob/sqlite_py/all_code_sqlite_d.py", bsn_date);
         }

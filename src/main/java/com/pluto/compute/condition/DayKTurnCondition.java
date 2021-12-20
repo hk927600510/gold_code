@@ -14,24 +14,23 @@ import java.util.stream.Collectors;
  * @version 5.1
  * Created by Kevin.H on 2021/11/2
  */
-public class DayKRedCountCondition extends AbstractCondition {
+public class DayKTurnCondition extends AbstractCondition {
 
     private String bsnDate;
 
     private int dayNum;
 
-    private int redDayNum;
+    private int times;
 
-
-    public DayKRedCountCondition(String bsnDate, int dayNum, int redDayNum) {
+    public DayKTurnCondition(String bsnDate, int dayNum, int times) {
         this.bsnDate = bsnDate;
         this.dayNum = dayNum;
-        this.redDayNum = redDayNum;
+        this.times = times;
     }
 
     @Override
     public String getName() {
-        return "日k-" + dayNum + "天K线涨幅>=0至少有" + redDayNum + "天";
+        return "日k放量-" + times + "倍" + dayNum + "日平均";
     }
 
     @Override
@@ -41,14 +40,22 @@ public class DayKRedCountCondition extends AbstractCondition {
         if (dateList.size() < 100) {
             return false;
         }
-        long redCount = dateList.subList(0, dayNum).stream().map(dateAndDayKMap::get).filter(this::filterRedDayKData).count();
-        return redCount >= redDayNum;
-    }
-
-    private boolean filterRedDayKData(DayKData data) {
-        if (isTradeSuspend(data)) {
-            return true;
+        DayKData today = dateAndDayKMap.get(dateList.get(0));
+        if (isTradeSuspend(today)) {
+            return false;
         }
-        return Double.parseDouble(data.getPctChg()) >= 0;
+        double todayTurn = Double.parseDouble(today.getTurn());
+        for (int i = 1; i < 30; i++) {
+            String date = dateList.get(i);
+            DayKData kData = dateAndDayKMap.get(date);
+            if (kData.getTurn() == null || kData.getTurn().isEmpty()) {
+                continue;
+            }
+            double turn = Double.parseDouble(kData.getTurn());
+            if (todayTurn < turn * times) {
+                return false;
+            }
+        }
+        return true;
     }
 }

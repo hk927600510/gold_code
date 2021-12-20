@@ -18,13 +18,19 @@ public class DayKMaCondition extends AbstractCondition {
 
     private String bsnDate;
 
-    public DayKMaCondition(String bsnDate) {
+    private int dayNum;
+
+    private int ignoreNum;
+
+    public DayKMaCondition(String bsnDate, int dayNum, int ignoreNum) {
         this.bsnDate = bsnDate;
+        this.dayNum = dayNum;
+        this.ignoreNum = ignoreNum;
     }
 
     @Override
     public String getName() {
-        return "日k站上均线";
+        return "日k" + dayNum + "天站上均线,容错" + ignoreNum + "天";
     }
 
     @Override
@@ -36,13 +42,13 @@ public class DayKMaCondition extends AbstractCondition {
         }
 
         int falseCount = 0;
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < dayNum; i++) {
             if (!checkDayKMa(dateAndDayKMap, dateList)) {
                 falseCount++;
             }
             dateList.remove(0);
         }
-        return falseCount <= 2;
+        return falseCount <= ignoreNum;
     }
 
     private boolean checkDayKMa(Map<String, DayKData> dateAndDayKMap, List<String> dateList) {

@@ -5,11 +5,9 @@ import com.pluto.compute.condition.CodeIpoDateCondition;
 import com.pluto.compute.condition.Condition;
 import com.pluto.compute.condition.DayKMaCondition;
 import com.pluto.compute.condition.DayKRedCountCondition;
-import com.pluto.compute.condition.DayKSlopeCondition;
-import com.pluto.compute.condition.WeekKRedCountCondition;
+import com.pluto.compute.condition.DayKTurnCondition;
 import com.pluto.data.reader.Reader;
 import com.pluto.data.reader.ReaderManager;
-import com.pluto.helper.CodeHelper;
 import com.pluto.helper.LogUtils;
 
 import java.util.ArrayList;
@@ -21,26 +19,24 @@ import java.util.Map;
  * @version 5.1
  * Created by Kevin.H on 2021/11/1
  */
-public class FirstStrategy extends AbstractStrategy {
+public class HighTurnStrategy extends AbstractStrategy {
 
     private String bsn_date;
 
     private List<Condition> conditionList;
 
-    public FirstStrategy(String bsn_date) {
+    public HighTurnStrategy(String bsn_date) {
         this.bsn_date = bsn_date;
         this.conditionList = new ArrayList<>();
-        String dataBeginDate = CodeHelper.getBsnDateWithInterval(bsn_date, -15);
         conditionList.add(new CodeIpoDateCondition(bsn_date));
-        conditionList.add(new DayKRedCountCondition(bsn_date, 15, 8));
-        conditionList.add(new WeekKRedCountCondition(dataBeginDate, bsn_date));
-        conditionList.add(new DayKSlopeCondition(dataBeginDate, bsn_date));
-        conditionList.add(new DayKMaCondition(bsn_date, 7, 2));
+        conditionList.add(new DayKMaCondition(bsn_date, 1, 0));
+        conditionList.add(new DayKTurnCondition(bsn_date, 10, 2));
+        conditionList.add(new DayKRedCountCondition(bsn_date, 1, 1));
     }
 
     @Override
     public String getName() {
-        return "1号策略";
+        return "放量策略";
     }
 
     @Override

@@ -28,7 +28,7 @@ public class HighTurnStrategy extends AbstractStrategy {
     public HighTurnStrategy(String bsn_date) {
         this.bsn_date = bsn_date;
         this.conditionList = new ArrayList<>();
-        conditionList.add(new CodeIpoDateCondition(bsn_date));
+        conditionList.add(new CodeIpoDateCondition(bsn_date, -1, -6, 0));
         conditionList.add(new DayKMaCondition(bsn_date, 1, 0));
         conditionList.add(new DayKTurnCondition(bsn_date, 10, 2));
         conditionList.add(new DayKRedCountCondition(bsn_date, 1, 1));

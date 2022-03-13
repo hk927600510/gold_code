@@ -4,7 +4,6 @@ import com.pluto.bean.CodeBasic;
 import com.pluto.data.reader.ReaderManager;
 import com.pluto.helper.CodeHelper;
 
-import java.util.Calendar;
 import java.util.Map;
 
 /**
@@ -16,14 +15,17 @@ public class CodeIpoDateCondition extends AbstractCondition {
 
     private String bsnDate;
 
-    public CodeIpoDateCondition(String bsnDate) {
+    private String conditionDate;
+
+    public CodeIpoDateCondition(String bsnDate, int yearInterval, int monthInterval, int dayInterval) {
         this.bsnDate = bsnDate;
+        this.conditionDate = CodeHelper.getCommonDateWithInterval(bsnDate, yearInterval, monthInterval, dayInterval);
     }
 
 
     @Override
     public String getName() {
-        return "上市时间在1.5年以上";
+        return "上市时间在" + conditionDate + "之前";
     }
 
     @Override
@@ -34,14 +36,7 @@ public class CodeIpoDateCondition extends AbstractCondition {
         if (codeBasic.getIpoDate() == null) {
             return true;
         }
-        return codeBasic.getIpoDate().compareTo(getConditionDate()) <= 0;
+        return codeBasic.getIpoDate().compareTo(conditionDate) <= 0;
     }
 
-    private String getConditionDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(CodeHelper.transToDate(bsnDate));
-        calendar.add(Calendar.MONTH, -6);
-        calendar.add(Calendar.YEAR, -1);
-        return CodeHelper.formatDate(calendar.getTime());
-    }
 }

@@ -6,7 +6,6 @@ import com.pluto.compute.condition.Condition;
 import com.pluto.compute.condition.DayKKeepRedCondition;
 import com.pluto.data.reader.Reader;
 import com.pluto.data.reader.ReaderManager;
-import com.pluto.helper.CodeHelper;
 import com.pluto.helper.LogUtils;
 
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class KeepRedStrategy extends AbstractStrategy {
     public KeepRedStrategy(String bsn_date) {
         this.bsn_date = bsn_date;
         this.conditionList = new ArrayList<>();
-        conditionList.add(new CodeIpoDateCondition(bsn_date));
+        conditionList.add(new CodeIpoDateCondition(bsn_date, -1, -6, 0));
         conditionList.add(new DayKKeepRedCondition(bsn_date));
     }
 

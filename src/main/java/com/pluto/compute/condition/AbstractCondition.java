@@ -18,7 +18,7 @@ public abstract class AbstractCondition implements Condition {
         if (data == null) {
             return true;
         }
-        if ("0" .equals(data.getTradeStatus()) || data.getPctChg().isEmpty()) {
+        if ("0".equals(data.getTradeStatus()) || data.getPctChg().isEmpty()) {
             return true;
         }
         return false;

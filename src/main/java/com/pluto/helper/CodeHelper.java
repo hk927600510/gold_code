@@ -105,6 +105,8 @@ public class CodeHelper {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(transToDate(bsnDate));
         calendar.add(Calendar.YEAR, yearInterval);
+        calendar.add(Calendar.MONTH, monthInterval);
+        calendar.add(Calendar.DAY_OF_YEAR, dayInterval);
         return formatDate(calendar.getTime());
     }
 

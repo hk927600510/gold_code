@@ -31,7 +31,7 @@ public class FirstStrategy extends AbstractStrategy {
         this.bsn_date = bsn_date;
         this.conditionList = new ArrayList<>();
         String dataBeginDate = CodeHelper.getBsnDateWithInterval(bsn_date, -15);
-        conditionList.add(new CodeIpoDateCondition(bsn_date));
+        conditionList.add(new CodeIpoDateCondition(bsn_date, -1, -6, 0));
         conditionList.add(new DayKRedCountCondition(bsn_date, 15, 8));
         conditionList.add(new WeekKRedCountCondition(dataBeginDate, bsn_date));
         conditionList.add(new DayKSlopeCondition(dataBeginDate, bsn_date));
